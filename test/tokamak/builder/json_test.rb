@@ -245,8 +245,7 @@ class Tokamak::Builder::JsonTest < Test::Unit::TestCase
       end
     end
 
-    hash = JSON.parse(json)
-    hash.extend(Methodize)
+    hash = JSON.parse(json).extend(Methodize)
     
     assert_equal "John Doe"               , hash.author.first.name
     assert_equal "foobar@example.com"     , hash.author.last.email
@@ -283,8 +282,7 @@ class Tokamak::Builder::JsonTest < Test::Unit::TestCase
       member.link("image", "http://example.com/image/2", :type => "application/json")                                
     end
     
-    hash = JSON.parse(json)
-    hash.extend(Methodize)
+    hash = JSON.parse(json).extend(Methodize)
         
     assert_equal "uri:1"                      , hash.article.id
     assert_equal "a great article"            , hash.article.title
@@ -479,8 +477,7 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
       member.link("image", "http://example.com/image/2", :type => "application/json")                                
     end
     
-    hash = JSON.parse(json)
-    hash.extend(Methodize)
+    hash = JSON.parse(json).extend(Methodize)
         
     assert_equal "uri:1"                      , hash.article.id
     assert_equal "a great article"            , hash.article.title
