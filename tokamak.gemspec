@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rack-conneg')
   s.add_development_dependency('tilt',"~>1.2")
   s.add_development_dependency('sinatra',"~>1.1")
-  s.add_development_dependency('rails',"~>3.0")
+  s.add_development_dependency('rails',">=2.3.2")
 end
