@@ -7,4 +7,3 @@ begin
 rescue Exception => e; end
 
 require File.expand_path(File.dirname(__FILE__) + '/../lib/tokamak.rb')
-
