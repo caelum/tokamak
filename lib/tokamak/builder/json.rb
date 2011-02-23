@@ -42,7 +42,7 @@ module Tokamak
 
       def link(relationship, uri, options = {})
         # Start link array
-        @current["link"] = [] unless @current["link"]
+        @current["link"] ||= []
         stringify_keys(options) 
 
         options["rel"]  = relationship.to_s
