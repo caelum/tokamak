@@ -279,6 +279,7 @@ end
 class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
   
   def xml_build_and_parse(&block)
+    block ||= lambda {}
     xml = Tokamak::Builder::Xml.build_dsl({}, &block)
     Nokogiri::XML::Document.parse(xml)
   end
@@ -305,6 +306,12 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     end
 
     assert_equal "22", xml.css("root id").first.text
+  end
+
+  def test_root_member_should_be_called_root
+    xml = xml_build_and_parse
+
+    assert_equal "root" , xml.root.name
   end
 
   def test_members
