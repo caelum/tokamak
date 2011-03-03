@@ -278,9 +278,9 @@ end
 
 class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
   
-  def xml_build_and_parse(options = {}, &block)
+  def xml_build_and_parse(obj = {}, options = {}, &block)
     block ||= lambda {}
-    xml = Tokamak::Builder::Xml.build_dsl({}, options, &block)
+    xml = Tokamak::Builder::Xml.build_dsl(obj, options, &block)
     Nokogiri::XML::Document.parse(xml)
   end
 
@@ -352,7 +352,7 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
 
   def test_supports_custom_root_with_collections
     items = [{ :name => "pencil" }, { :name => "eraser"}]
-    xml = xml_build_and_parse(:root => "items") do
+    xml = xml_build_and_parse({}, :root => "items") do
       each(items, :root => "item") do |item|
         name item[:name]
       end
@@ -367,22 +367,18 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     def helper.name
       "guilherme"
     end
-    xml = Tokamak::Builder::Xml.build_dsl(helper) do |s|
+    xml = xml_build_and_parse(helper) do |s|
       name s.name
     end
-
-    xml = Nokogiri::XML::Document.parse(xml)
 
     assert_equal "guilherme", xml.css("root name").first.text
   end
 
   def test_uses_externally_declared_objects_if_accessible
     obj = { :category => "esporte" }
-    xml = Tokamak::Builder::Xml.build_dsl({}) do |s|
+    xml = xml_build_and_parse do |s|
       categoria obj[:category]
     end
-
-    xml = Nokogiri::XML::Document.parse(xml)
 
     assert_equal "esporte", xml.css("root categoria").first.text
   end
