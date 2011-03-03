@@ -24,11 +24,18 @@ module Tokamak
       def members(options = {}, &block)
         collection = options[:collection] || @obj
         raise Tokamak::BuilderError.new("Members method require a collection to execute") unless collection.respond_to?(:each)
-        collection.each do |member|
-          member_root = @raw.create_element(options[:root] || "member")
+        name = options[:root] || "member"
+        collection.each do |element|
+          member_root = @raw.create_element(name)
           member_root.parent = @parent
           @parent = member_root
-          block.call(self, member)
+          if block.arity==1
+            # new dsl
+            block.call(element)
+          else
+            # old dsl (deprecate at 1.3?)
+            block.call(self, element)
+          end
           @parent = member_root.parent
         end
       end

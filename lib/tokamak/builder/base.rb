@@ -60,22 +60,30 @@ module Tokamak
         end
       end
 
+      # adds a key and value pair to the representation
+      # example:
+      #
+      # name 'guilherme'
       def method_missing(sym, *args, &block)
         values do |v|
           v.send sym, *args, &block
         end
       end
-      
+
+      # writes a key and value pair to the representation
+      # example:
+      #
+      # write :name, "guilherme"
       def write(sym, val)
         values do |v|
           v.send sym, val
         end
       end
+
       
-      # the members method is left for compatibility with the
-      # external scope version of the DSL
-      def each(*args, &block)
-        members(*args, &block)
+      def each(collection, options = {}, &block)
+        options[:collection] = collection
+        members(options, &block)
       end
 
     end

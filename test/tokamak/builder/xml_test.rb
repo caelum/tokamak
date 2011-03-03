@@ -314,18 +314,40 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     assert_equal "root" , xml.root.name
   end
 
-  def test_members
-    obj = [{ :foo => "bar" }]
-    xml = Tokamak::Builder::Xml.build(obj) do
-
-      members do |member, some_foos|
-        write :id, some_foos[:foo]
+  def test_allows_iterating_over_a_collection
+    items = [{ :name => "pencil" }]
+    xml = xml_build_and_parse do
+      each(items) do |item|
+        name item[:name]
       end
     end
 
-    xml = Nokogiri::XML::Document.parse(xml)
+    assert_equal "pencil"  , xml.css("root > member > name").first.text
+  end
 
-    assert_equal "bar"  , xml.css("root > member > id").first.text
+  def test_allows_collection_custom_member_name
+    items = [{ :name => "pencil" }]
+    xml = xml_build_and_parse do
+      each(items, :root => "item") do |item|
+        name item[:name]
+      end
+    end
+
+    assert_equal "pencil"  , xml.css("root > item > name").first.text
+  end
+
+  def test_allows_typical_usage_of_a_collection
+    items = [{ :name => "pencil" }, { :name => "eraser"}]
+    xml = xml_build_and_parse do
+      items {
+        each(items, :root => "item") do |item|
+          name item[:name]
+        end
+      }
+    end
+
+    assert_equal "pencil"  , xml.css("root > items > item > name").first.text
+    assert_equal "eraser"  , xml.css("root > items > item > name").last.text
   end
 
   def test_root_set_on_builder
