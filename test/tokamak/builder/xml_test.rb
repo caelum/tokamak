@@ -383,38 +383,6 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     assert_equal "esporte", xml.css("root categoria").first.text
   end
 
-  def test_collection_set_on_members
-    obj = { :foo => "bar" }
-    a_collection = [1,2,3,4]
-    xml = Tokamak::Builder::Xml.build_dsl(obj) do
-      write :id, "an_id"
-
-      members(:collection => a_collection) do |member, item|
-        write :id, item
-      end
-    end
-
-    xml = Nokogiri::XML::Document.parse(xml)
-
-    assert_equal "an_id", xml.css("root id").first.text
-    assert_equal "1"    , xml.css("root > member > id").first.text
-    assert_equal 4      , xml.css("root > member > id").size
-  end
-
-  def test_raise_exception_for_not_passing_a_collection_as_parameter_to_members
-    obj = 42
-
-    assert_raise Tokamak::BuilderError do
-      json = Tokamak::Builder::Json.build(obj) do
-        write :id, number
-
-        members do |member, item|
-          write :id, item
-        end
-      end
-    end
-  end
-
   def test_root_set_on_members
     obj = [{ :foo => "bar" }, { :foo => "zue" }]
     xml = Tokamak::Builder::Xml.build(obj) do
