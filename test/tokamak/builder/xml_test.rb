@@ -327,12 +327,9 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
   end
 
   def test_uses_externally_declared_objects_if_accessible
-    obj = { :foo => "bar" }
-    def obj.categoria
-      "esporte"
-    end
+    obj = { :category => "esporte" }
     xml = Tokamak::Builder::Xml.build_dsl({}) do |s|
-      categoria obj.categoria
+      categoria obj[:category]
     end
 
     xml = Nokogiri::XML::Document.parse(xml)
