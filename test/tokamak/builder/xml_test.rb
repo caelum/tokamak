@@ -277,41 +277,39 @@ class Tokamak::Builder::XmlTest < Test::Unit::TestCase
 end
 
 class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
+  
+  def xml_build_and_parse(&block)
+    xml = Tokamak::Builder::Xml.build_dsl({}, &block)
+    Nokogiri::XML::Document.parse(xml)
+  end
 
   def test_accepts_custom_values
-    xml = Tokamak::Builder::Xml.build_dsl({}) do
+    xml = xml_build_and_parse do
       name "erich"
     end
-
-    xml = Nokogiri::XML::Document.parse(xml)
 
     assert_equal "erich", xml.css("root name").first.text
   end
 
   def test_supports_any_attribute_by_using_the_write_method
-    xml = Tokamak::Builder::Xml.build_dsl({}) do
+    xml = xml_build_and_parse do
       write :to_s , "22"
     end
-
-    xml = Nokogiri::XML::Document.parse(xml)
-
+    
     assert_equal "22", xml.css("root to_s").first.text
   end
 
   def test_id_method_is_also_accepted
-    xml = Tokamak::Builder::Xml.build_dsl({}) do
+    xml = xml_build_and_parse do
       id  "22"
     end
-
-    xml = Nokogiri::XML::Document.parse(xml)
 
     assert_equal "22", xml.css("root id").first.text
   end
 
-  def test_values_and_members
+  def test_members
     obj = [{ :foo => "bar" }]
     xml = Tokamak::Builder::Xml.build(obj) do
-      write :id, "an_id"
 
       members do |member, some_foos|
         write :id, some_foos[:foo]
@@ -321,7 +319,6 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     xml = Nokogiri::XML::Document.parse(xml)
 
     assert_equal "root" , xml.root.name
-    assert_equal "an_id", xml.css("root id").first.text
     assert_equal "bar"  , xml.css("root > member > id").first.text
   end
 
