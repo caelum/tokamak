@@ -325,7 +325,6 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
 
     xml = Nokogiri::XML::Document.parse(xml)
 
-    assert_equal "root" , xml.root.name
     assert_equal "bar"  , xml.css("root > member > id").first.text
   end
 
@@ -406,7 +405,6 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
   def test_root_set_on_members
     obj = [{ :foo => "bar" }, { :foo => "zue" }]
     xml = Tokamak::Builder::Xml.build(obj) do
-      write :id, "an_id"
 
       members(:root => "foos") do |member, some_foos|
         write :id, some_foos[:foo]
@@ -415,7 +413,6 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
 
     xml = Nokogiri::XML::Document.parse(xml)
 
-    assert_equal "an_id", xml.css("root id").first.text
     assert_equal "bar"  , xml.css("root > foos > id").first.text
     assert_equal 2      , xml.css("root > foos > id").size
   end
