@@ -3,6 +3,17 @@ module Tokamak
     class Base
 
       class << self
+        
+        def build_dsl(obj, options = {}, &block)
+          recipe = block_given? ? block : options.delete(:recipe)
+
+          raise Tokamak::BuilderError.new("Recipe required to build representation.") unless recipe.respond_to?(:call)
+
+          builder = self.new(nil, options)
+          builder.instance_exec(obj, &recipe)
+
+          builder.representation
+        end
 
         def build(obj, options = {}, &block)
           recipe = block_given? ? block : options.delete(:recipe)

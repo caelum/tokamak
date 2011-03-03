@@ -311,15 +311,43 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     assert_equal "an_id", xml.css("foos id").first.text
     assert_equal "bar"  , xml.css("foos > member > id").first.text
   end
+  
+  def test_uses_outside_scope_when_passing_an_arg_to_the_builder
+    helper = Object.new
+    def helper.name
+      "guilherme"
+    end
+    xml = Tokamak::Builder::Xml.build_dsl(helper) do |s|
+      name s.name
+    end
+
+    xml = Nokogiri::XML::Document.parse(xml)
+
+    assert_equal "guilherme", xml.css("root name").first.text
+  end
+
+  def test_uses_externally_declared_objects_if_accessible
+    obj = { :foo => "bar" }
+    def obj.categoria
+      "esporte"
+    end
+    xml = Tokamak::Builder::Xml.build_dsl({}) do |s|
+      categoria obj.categoria
+    end
+
+    xml = Nokogiri::XML::Document.parse(xml)
+
+    assert_equal "esporte", xml.css("root categoria").first.text
+  end
 
   def test_collection_set_on_members
     obj = { :foo => "bar" }
     a_collection = [1,2,3,4]
-    xml = Tokamak::Builder::Xml.build(obj) do
+    xml = Tokamak::Builder::Xml.build_dsl(obj) do
       write :id, "an_id"
 
-      members(:collection => a_collection) do |member, number|
-        write :id, number
+      members(:collection => a_collection) do |member, item|
+        write :id, item
       end
     end
 
