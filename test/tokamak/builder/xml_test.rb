@@ -278,9 +278,9 @@ end
 
 class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
   
-  def xml_build_and_parse(&block)
+  def xml_build_and_parse(options = {}, &block)
     block ||= lambda {}
-    xml = Tokamak::Builder::Xml.build_dsl({}, &block)
+    xml = Tokamak::Builder::Xml.build_dsl({}, options, &block)
     Nokogiri::XML::Document.parse(xml)
   end
 
@@ -350,21 +350,16 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     assert_equal "eraser"  , xml.css("root > items > item > name").last.text
   end
 
-  def test_root_set_on_builder
-    obj = [{ :foo => "bar" }, { :foo => "zue" }]
-    xml = Tokamak::Builder::Xml.build(obj, :root => "foos") do
-      write :id, "an_id"
-
-      members do |member, some_foos|
-        write :id, some_foos[:foo]
+  def test_supports_custom_root_with_collections
+    items = [{ :name => "pencil" }, { :name => "eraser"}]
+    xml = xml_build_and_parse(:root => "items") do
+      each(items, :root => "item") do |item|
+        name item[:name]
       end
     end
 
-    xml = Nokogiri::XML::Document.parse(xml)
-
-    assert_equal "foos" , xml.root.name
-    assert_equal "an_id", xml.css("foos id").first.text
-    assert_equal "bar"  , xml.css("foos > member > id").first.text
+    assert_equal "pencil"  , xml.css("items > item > name").first.text
+    assert_equal "eraser"  , xml.css("items > item > name").last.text
   end
   
   def test_uses_outside_scope_when_passing_an_arg_to_the_builder
