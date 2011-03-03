@@ -2,6 +2,9 @@ module Tokamak
   module Builder
     class Base
 
+      # field id is quite common
+      undef_method :id
+
       class << self
         
         def build_dsl(obj, options = {}, &block)

@@ -278,6 +278,36 @@ end
 
 class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
 
+  def test_accepts_custom_values
+    xml = Tokamak::Builder::Xml.build_dsl({}) do
+      name "erich"
+    end
+
+    xml = Nokogiri::XML::Document.parse(xml)
+
+    assert_equal "erich", xml.css("root name").first.text
+  end
+
+  def test_supports_any_attribute_by_using_the_write_method
+    xml = Tokamak::Builder::Xml.build_dsl({}) do
+      write :to_s , "22"
+    end
+
+    xml = Nokogiri::XML::Document.parse(xml)
+
+    assert_equal "22", xml.css("root to_s").first.text
+  end
+
+  def test_id_method_is_also_accepted
+    xml = Tokamak::Builder::Xml.build_dsl({}) do
+      id  "22"
+    end
+
+    xml = Nokogiri::XML::Document.parse(xml)
+
+    assert_equal "22", xml.css("root id").first.text
+  end
+
   def test_values_and_members
     obj = [{ :foo => "bar" }]
     xml = Tokamak::Builder::Xml.build(obj) do
