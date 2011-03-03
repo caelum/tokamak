@@ -383,9 +383,8 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     assert_equal "esporte", xml.css("root categoria").first.text
   end
 
-  def test_nested_crazy_values
-    obj = [{ :foo => "bar" }, { :foo => "zue" }]
-    xml = Tokamak::Builder::Xml.build(obj) do
+  def test_accepts_nested_elements
+    xml = xml_build_and_parse do
       body {
         face {
           eyes  "blue"
@@ -394,15 +393,12 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
       }
     end
 
-    xml = Nokogiri::XML::Document.parse(xml)
-
     assert_equal "blue" , xml.css("root > body > face > eyes").first.text
     assert_equal "large", xml.css("root > body > face > mouth").first.text
   end
 
-  def test_xml_attributes_on_values
-    obj = [{ :foo => "bar" }, { :foo => "zue" }]
-    xml = Tokamak::Builder::Xml.build(obj) do
+  def test_accepts_xml_attributes_on_values
+    xml = xml_build_and_parse do
         body(:type => "fat", :gender => "male") {
           face {
             eyes  "blue"
@@ -411,13 +407,11 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
         }
     end
 
-    xml = Nokogiri::XML::Document.parse(xml)
-
     assert_equal "fat" , xml.css("root > body").first["type"]
     assert_equal "32"  , xml.css("root > body > face > mouth").first["teeth_count"]
   end
 
-  def test_xml_namespaces_on_values
+  def test_accepts_xml_namespaces_on_values
     obj = [{ :foo => "bar" }, { :foo => "zue" }]
     xml = Tokamak::Builder::Xml.build(obj) do |collection|
       collection.values do |values|
@@ -435,33 +429,35 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     assert_equal "biology", xml.at_xpath(".//biology:face", {"biology" => "http://a.biology.namespace.com"}).namespace.prefix
   end
 
-  def test_build_full_collection
+  def test_an_entire_complex_case
     time = Time.now
-    some_articles = [
+    articles = [
       {:id => 1, :title => "a great article", :updated => time},
       {:id => 2, :title => "another great article", :updated => time}
     ]
 
-    xml = Tokamak::Builder::Xml.build(some_articles) do
-        write :id,      "http://example.com/json"
+    xml = xml_build_and_parse do
+        id      "http://example.com/xml"
         title   "Feed"
         updated time
+        
+        authors {
+          author {
+            name  "John Doe"
+            email "joedoe@example.com"
+          }
 
-        author {
-          name  "John Doe"
-          email "joedoe@example.com"
-        }
-
-        author {
-          name  "Foo Bar"
-          email "foobar@example.com"
+          author {
+            name  "Foo Bar"
+            email "foobar@example.com"
+          }
         }
 
       link("next"    , "http://a.link.com/next")
       link("previous", "http://a.link.com/previous")
 
-      members(:root => "articles") do |member, article|
-          write :id,      "uri:#{article[:id]}"
+      each(articles, :root => "articles") do |article|
+          id      "uri:#{article[:id]}"
           title   article[:title]
           updated article[:updated]
 
@@ -470,10 +466,8 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
       end
     end
 
-    xml = Nokogiri::XML::Document.parse(xml)
-
-    assert_equal "John Doe"               , xml.css("root > author").first.css("name").first.text
-    assert_equal "foobar@example.com"     , xml.css("root > author").last.css("email").first.text
+    assert_equal "John Doe"               , xml.css("root > authors > author").first.css("name").first.text
+    assert_equal "foobar@example.com"     , xml.css("root > authors > author").last.css("email").first.text
 
     assert_equal "http://a.link.com/next" , xml.css("root > link").first["href"]
     assert_equal "next"                   , xml.css("root > link").first["rel"]
