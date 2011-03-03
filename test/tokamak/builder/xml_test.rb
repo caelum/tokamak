@@ -74,7 +74,7 @@ class Tokamak::Builder::XmlTest < Test::Unit::TestCase
     obj = 42
 
     assert_raise Tokamak::BuilderError do
-      json = Tokamak::Builder::Xml.build(obj) do |collection, number|
+      Tokamak::Builder::Xml.build(obj) do |collection, number|
         collection.values do |values|
           values.id number
         end
@@ -381,21 +381,6 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
     end
 
     assert_equal "esporte", xml.css("root categoria").first.text
-  end
-
-  def test_root_set_on_members
-    obj = [{ :foo => "bar" }, { :foo => "zue" }]
-    xml = Tokamak::Builder::Xml.build(obj) do
-
-      members(:root => "foos") do |member, some_foos|
-        write :id, some_foos[:foo]
-      end
-    end
-
-    xml = Nokogiri::XML::Document.parse(xml)
-
-    assert_equal "bar"  , xml.css("root > foos > id").first.text
-    assert_equal 2      , xml.css("root > foos > id").size
   end
 
   def test_nested_crazy_values
