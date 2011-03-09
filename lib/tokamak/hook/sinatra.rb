@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../../tokamak.rb') unless defined? ::Tokamak
+require 'tokamak' unless defined? ::Tokamak
 require "tokamak/hook/tilt"
 
 module Rack
