@@ -336,27 +336,39 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
     assert_equal "22", json["id"]
   end
   
-  # def test_allows_iterating_over_a_collection
-  #   items = [{ :name => "pencil" }]
-  #   json = json_build_and_parse do
-  #     each(items) do |item|
-  #       name item[:name]
-  #     end
-  #   end
-  # 
-  #   assert_equal "pencil"  , json["root > member > name").first.text
-  # end
-  # 
-  # def test_allows_collection_custom_member_name
-  #   items = [{ :name => "pencil" }]
-  #   json = json_build_and_parse do
-  #     each(items, :root => "item") do |item|
-  #       name item[:name]
-  #     end
-  #   end
-  # 
-  #   assert_equal "pencil"  , json["root > item > name").first.text
-  # end
+  def test_allows_iterating_over_a_collection
+    items = [{ :name => "pencil" }]
+    json = json_build_and_parse do
+      each(items) do |item|
+        name item[:name]
+      end
+    end
+  
+    assert_equal "pencil"  , json["members"][0]["name"]
+  end
+
+  def test_allows_iterating_over_a_collection_of_strings
+    items = ["pencil", "eraser"]
+    json = json_build_and_parse do
+      items.each do |item|
+        name item
+      end
+    end
+  
+    assert_equal "pencil"  , json["name"][0]
+    assert_equal "eraser"  , json["name"][1]
+  end
+  
+  def test_allows_collection_custom_member_name
+    items = [{ :name => "pencil" }]
+    json = json_build_and_parse do
+      each(items, :root => "item") do |item|
+        name item[:name]
+      end
+    end
+  
+    assert_equal "pencil"  , json["item"][0]["name"]
+  end
   # 
   # def test_allows_typical_usage_of_a_collection
   #   items = [{ :name => "pencil" }, { :name => "eraser"}]

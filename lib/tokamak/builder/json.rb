@@ -34,7 +34,13 @@ module Tokamak
 
           parent = @current
           @current = {}
-          block.call(self, member)
+          if block.arity==1
+            # new dsl
+            block.call(member)
+          else
+            # old dsl (deprecate at 1.3?)
+            block.call(self, member)
+          end
           add_to(parent, root, @current)
           @current = parent
 
@@ -66,6 +72,7 @@ module Tokamak
           @current = parent
         end
 
+        # TODO change to name.to_sym in 1.3?
         add_to(@current, name, node)
       end
 
