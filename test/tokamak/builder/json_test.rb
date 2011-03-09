@@ -320,53 +320,47 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
     assert_equal "david", json["name"]
   end
 
-  # def test_supports_any_attribute_by_using_the_write_method
-  #   xml = json_build_and_parse do
-  #     write :to_s , "22"
-  #   end
-  #   
-  #   assert_equal "22", xml.css("root to_s").first.text
-  # end
-  # 
-  # def test_id_method_is_also_accepted
-  #   xml = json_build_and_parse do
-  #     id  "22"
-  #   end
-  # 
-  #   assert_equal "22", xml.css("root id").first.text
-  # end
-  # 
-  # def test_root_member_should_be_called_root
-  #   xml = json_build_and_parse
-  # 
-  #   assert_equal "root" , xml.root.name
-  # end
-  # 
+  def test_supports_any_attribute_by_using_the_write_method
+    json = json_build_and_parse do
+      write :to_s , "22"
+    end
+    
+    assert_equal "22", json["to_s"]
+  end
+  
+  def test_id_method_is_also_accepted
+    json = json_build_and_parse do
+      id  "22"
+    end
+  
+    assert_equal "22", json["id"]
+  end
+  
   # def test_allows_iterating_over_a_collection
   #   items = [{ :name => "pencil" }]
-  #   xml = json_build_and_parse do
+  #   json = json_build_and_parse do
   #     each(items) do |item|
   #       name item[:name]
   #     end
   #   end
   # 
-  #   assert_equal "pencil"  , xml.css("root > member > name").first.text
+  #   assert_equal "pencil"  , json["root > member > name").first.text
   # end
   # 
   # def test_allows_collection_custom_member_name
   #   items = [{ :name => "pencil" }]
-  #   xml = json_build_and_parse do
+  #   json = json_build_and_parse do
   #     each(items, :root => "item") do |item|
   #       name item[:name]
   #     end
   #   end
   # 
-  #   assert_equal "pencil"  , xml.css("root > item > name").first.text
+  #   assert_equal "pencil"  , json["root > item > name").first.text
   # end
   # 
   # def test_allows_typical_usage_of_a_collection
   #   items = [{ :name => "pencil" }, { :name => "eraser"}]
-  #   xml = json_build_and_parse do
+  #   json = json_build_and_parse do
   #     items {
   #       each(items, :root => "item") do |item|
   #         name item[:name]
@@ -374,20 +368,20 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #     }
   #   end
   # 
-  #   assert_equal "pencil"  , xml.css("root > items > item > name").first.text
-  #   assert_equal "eraser"  , xml.css("root > items > item > name").last.text
+  #   assert_equal "pencil"  , json["root > items > item > name").first.text
+  #   assert_equal "eraser"  , json["root > items > item > name").last.text
   # end
   # 
   # def test_supports_custom_root_with_collections
   #   items = [{ :name => "pencil" }, { :name => "eraser"}]
-  #   xml = json_build_and_parse({}, :root => "items") do
+  #   json = json_build_and_parse({}, :root => "items") do
   #     each(items, :root => "item") do |item|
   #       name item[:name]
   #     end
   #   end
   # 
-  #   assert_equal "pencil"  , xml.css("items > item > name").first.text
-  #   assert_equal "eraser"  , xml.css("items > item > name").last.text
+  #   assert_equal "pencil"  , json["items > item > name").first.text
+  #   assert_equal "eraser"  , json["items > item > name").last.text
   # end
   # 
   # def test_uses_outside_scope_when_passing_an_arg_to_the_builder
@@ -395,24 +389,24 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #   def helper.name
   #     "guilherme"
   #   end
-  #   xml = json_build_and_parse(helper) do |s|
+  #   json = json_build_and_parse(helper) do |s|
   #     name s.name
   #   end
   # 
-  #   assert_equal "guilherme", xml.css("root name").first.text
+  #   assert_equal "guilherme", json["root name").first.text
   # end
   # 
   # def test_uses_externally_declared_objects_if_accessible
   #   obj = { :category => "esporte" }
-  #   xml = json_build_and_parse do |s|
+  #   json = json_build_and_parse do |s|
   #     categoria obj[:category]
   #   end
   # 
-  #   assert_equal "esporte", xml.css("root categoria").first.text
+  #   assert_equal "esporte", json["root categoria").first.text
   # end
   # 
   # def test_accepts_nested_elements
-  #   xml = json_build_and_parse do
+  #   json = json_build_and_parse do
   #     body {
   #       face {
   #         eyes  "blue"
@@ -421,12 +415,12 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #     }
   #   end
   # 
-  #   assert_equal "blue" , xml.css("root > body > face > eyes").first.text
-  #   assert_equal "large", xml.css("root > body > face > mouth").first.text
+  #   assert_equal "blue" , json["root > body > face > eyes").first.text
+  #   assert_equal "large", json["root > body > face > mouth").first.text
   # end
   # 
   # def test_accepts_json_attributes_on_values
-  #   xml = json_build_and_parse do
+  #   json = json_build_and_parse do
   #       body(:type => "fat", :gender => "male") {
   #         face {
   #           eyes  "blue"
@@ -435,13 +429,13 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #       }
   #   end
   # 
-  #   assert_equal "fat" , xml.css("root > body").first["type"]
-  #   assert_equal "32"  , xml.css("root > body > face > mouth").first["teeth_count"]
+  #   assert_equal "fat" , json["root > body").first["type"]
+  #   assert_equal "32"  , json["root > body > face > mouth").first["teeth_count"]
   # end
   # 
   # def test_accepts_json_namespaces_on_values
   #   obj = [{ :foo => "bar" }, { :foo => "zue" }]
-  #   xml = Tokamak::Builder::Json.build(obj) do |collection|
+  #   json = Tokamak::Builder::Json.build(obj) do |collection|
   #     collection.values do |values|
   #       values.body("xmlns:biology" => "http://a.biology.namespace.com") {
   #         values["biology"].face {
@@ -452,7 +446,7 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #     end
   #   end
   # 
-  #   xml = Nokogiri::XML::Document.parse(xml)
+  #   json = Nokogiri::XML::Document.parse(xml)
   # 
   #   assert_equal "biology", xml.at_xpath(".//biology:face", {"biology" => "http://a.biology.namespace.com"}).namespace.prefix
   # end
@@ -464,7 +458,7 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #     {:id => 2, :title => "another great article", :updated => time}
   #   ]
   # 
-  #   xml = json_build_and_parse do
+  #   json = json_build_and_parse do
   #       id      "http://example.com/xml"
   #       title   "Feed"
   #       updated time
@@ -494,18 +488,18 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   #     end
   #   end
   # 
-  #   assert_equal "John Doe"               , xml.css("root > authors > author").first.css("name").first.text
-  #   assert_equal "foobar@example.com"     , xml.css("root > authors > author").last.css("email").first.text
+  #   assert_equal "John Doe"               , json["root > authors > author").first.css("name").first.text
+  #   assert_equal "foobar@example.com"     , json["root > authors > author").last.css("email").first.text
   # 
-  #   assert_equal "http://a.link.com/next" , xml.css("root > link").first["href"]
-  #   assert_equal "next"                   , xml.css("root > link").first["rel"]
-  #   assert_equal "application/xml"        , xml.css("root > link").last["type"]
+  #   assert_equal "http://a.link.com/next" , json["root > link").first["href"]
+  #   assert_equal "next"                   , json["root > link").first["rel"]
+  #   assert_equal "application/xml"        , json["root > link").last["type"]
   # 
-  #   assert_equal "uri:1"                      , xml.css("root > articles").first.css("id").first.text
-  #   assert_equal "a great article"            , xml.css("root > articles").first.css("title").first.text
-  #   assert_equal "http://example.com/image/1" , xml.css("root > articles").first.css("link").first["href"]
-  #   assert_equal "image"                      , xml.css("root > articles").first.css("link").first["rel"]
-  #   assert_equal "application/json"           , xml.css("root > articles").first.css("link").last["type"]
+  #   assert_equal "uri:1"                      , json["root > articles").first.css("id").first.text
+  #   assert_equal "a great article"            , json["root > articles").first.css("title").first.text
+  #   assert_equal "http://example.com/image/1" , json["root > articles").first.css("link").first["href"]
+  #   assert_equal "image"                      , json["root > articles").first.css("link").first["rel"]
+  #   assert_equal "application/json"           , json["root > articles").first.css("link").last["type"]
   # end
 end
 
@@ -514,8 +508,6 @@ end
 #   def test_custom_values_and_iterating_over_members
 #     obj = [{ :foo => "bar" }]
 #     json = Tokamak::Builder::Json.build(obj) do
-#       write :id, "an_id"
-#       
 #       members do |member, some_foos|
 #         write :id, some_foos[:foo]
 #       end
@@ -523,14 +515,12 @@ end
 #     
 #     hash = JSON.parse(json).extend(Methodize)
 #     
-#     assert_equal "an_id", hash.id
 #     assert_equal "bar"  , hash.members.first.id
 #   end
 # 
 #   def test_root_set_on_builder
 #     obj = [{ :foo => "bar" }, { :foo => "zue" }]
 #     json = Tokamak::Builder::Json.build(obj, :root => "foos") do
-#       write :id, "an_id"
 #       
 #       members do |member, some_foos|
 #         write :id, some_foos[:foo]
@@ -548,7 +538,6 @@ end
 #     obj = { :foo => "bar" }
 #     a_collection = [1,2,3,4]
 #     json = Tokamak::Builder::Json.build(obj) do
-#       write :id, "an_id"
 #       
 #       members(:collection => a_collection) do |member, number|
 #         write :id, number
@@ -557,7 +546,6 @@ end
 #     
 #     hash = JSON.parse(json).extend(Methodize)
 #     
-#     assert_equal "an_id", hash.id
 #     assert_equal 1      , hash.members.first.id
 #     assert_equal 4      , hash.members.size
 #   end
@@ -565,7 +553,6 @@ end
 #   def test_root_set_on_members
 #     obj = [{ :foo => "bar" }, { :foo => "zue" }]
 #     json = Tokamak::Builder::Json.build(obj) do
-#       write :id, "an_id"
 #       
 #       members(:root => "foos") do |member, some_foos|
 #         write :id, some_foos[:foo]
@@ -574,7 +561,6 @@ end
 #     
 #     hash = JSON.parse(json).extend(Methodize)
 #     
-#     assert_equal "an_id", hash.id
 #     assert_equal "bar"  , hash.foos.first.id
 #     assert_equal 2      , hash.foos.size
 #   end
