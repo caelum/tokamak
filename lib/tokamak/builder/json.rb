@@ -10,8 +10,12 @@ module Tokamak
 
       def initialize(obj, options = {})
         initialize_library
-        @raw     = options[:root] ? { options[:root] => {} } : {}
-        @current = options[:root] ? @raw[options[:root]]     : @raw
+        if options[:root]
+          @raw     = { options[:root] => {} }
+          @current = @raw[options[:root]]
+        else
+          @current = @raw = {}
+        end
         @obj     = obj
       end
 
@@ -80,9 +84,13 @@ module Tokamak
         end
 
         if hashes.empty?
-          # only simple values
-          vals = vals.first if vals.size==1
-          node = has_block ? {} : vals
+          if has_block
+            {}
+          elsif vals.size==1
+            vals.first
+          else
+            vals
+          end
         else
           # yes we have hashes
           node = {}
