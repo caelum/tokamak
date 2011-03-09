@@ -369,33 +369,33 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
   
     assert_equal "pencil"  , json["item"][0]["name"]
   end
-  # 
-  # def test_allows_typical_usage_of_a_collection
-  #   items = [{ :name => "pencil" }, { :name => "eraser"}]
-  #   json = json_build_and_parse do
-  #     items {
-  #       each(items, :root => "item") do |item|
-  #         name item[:name]
-  #       end
-  #     }
-  #   end
-  # 
-  #   assert_equal "pencil"  , json["root > items > item > name").first.text
-  #   assert_equal "eraser"  , json["root > items > item > name").last.text
-  # end
-  # 
-  # def test_supports_custom_root_with_collections
-  #   items = [{ :name => "pencil" }, { :name => "eraser"}]
-  #   json = json_build_and_parse({}, :root => "items") do
-  #     each(items, :root => "item") do |item|
-  #       name item[:name]
-  #     end
-  #   end
-  # 
-  #   assert_equal "pencil"  , json["items > item > name").first.text
-  #   assert_equal "eraser"  , json["items > item > name").last.text
-  # end
-  # 
+  
+  def test_allows_typical_usage_of_a_collection
+    items = [{ :name => "pencil" }, { :name => "eraser"}]
+    json = json_build_and_parse do
+      items {
+        each(items, :root => "item") do |item|
+          name item[:name]
+        end
+      }
+    end
+  
+    assert_equal "pencil"  , json["items"]["item"][0]["name"]
+    assert_equal "eraser"  , json["items"]["item"][1]["name"]
+  end
+  
+  def test_supports_custom_root_with_collections
+    items = [{ :name => "pencil" }, { :name => "eraser"}]
+    json = json_build_and_parse({}, :root => "items") do
+      each(items, :root => "item") do |item|
+        name item[:name]
+      end
+    end
+  
+    assert_equal "pencil"  , json["items"]["item"][0]["name"]
+    assert_equal "eraser"  , json["items"]["item"][1]["name"]
+  end
+  
   # def test_uses_outside_scope_when_passing_an_arg_to_the_builder
   #   helper = Object.new
   #   def helper.name
