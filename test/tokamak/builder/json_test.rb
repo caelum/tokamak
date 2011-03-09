@@ -314,10 +314,10 @@ class Tokamak::Builder::JsonLambdaTest < Test::Unit::TestCase
 
   def test_accepts_custom_values
     json = json_build_and_parse do
-      name "erich"
+      name "david"
     end
 
-    assert_equal "erich", json["name"]
+    assert_equal "david", json["name"]
   end
 
   # def test_supports_any_attribute_by_using_the_write_method
