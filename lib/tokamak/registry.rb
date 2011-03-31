@@ -14,6 +14,10 @@ module Tokamak
     def [](media_type)
       @media_types[media_type[/^([^\s\;]+)/, 1]]
     end
+    
+    def []=(media_type, handler)
+      @media_types[media_type] = handler
+    end
 
   end
 end

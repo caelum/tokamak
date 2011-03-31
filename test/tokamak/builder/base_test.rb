@@ -28,8 +28,7 @@ class Tokamak::Builder::BaseTest < Test::Unit::TestCase
   end
 
   def test_should_support_media_type_registering
-    AnotherBuilder.media_types << "runtime/media_type"
-    @registry << AnotherBuilder
+    @registry["runtime/media_type"] = AnotherBuilder
     assert_equal AnotherBuilder   , @registry["runtime/media_type"]
   end
   
