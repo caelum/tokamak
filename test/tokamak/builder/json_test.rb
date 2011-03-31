@@ -33,26 +33,16 @@ class Tokamak::Builder::JsonTest < Test::Unit::TestCase
   end
 
   def test_empty_value_as_nil
-    obj = [{ :foo => "bar" }]
+    obj = {}
     json = Tokamak::Builder::Json.build(obj) do |collection|
       collection.values do |values|
-        values.id "an_id"
         values.empty_value 
       end
-      
-      collection.members do |member, some_foos|
-        member.values do |values|
-          values.id some_foos[:foo]
-        end
-      end
     end
-
+    
     hash = JSON.parse(json).extend(Methodize)
     
     assert_equal nil    , hash.empty_value
-    assert_equal "an_id", hash.id
-    assert_equal "bar"  , hash.members.first.id
-    assert hash.members.kind_of?(Array)
   end
 
   def test_root_set_on_builder

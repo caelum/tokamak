@@ -93,7 +93,7 @@ module Tokamak
         if hashes.empty?
           if has_block
             {}
-          elsif vals.size==1
+          elsif vals.size<=1
             vals.first
           else
             vals
