@@ -22,126 +22,69 @@ The following DSL is a patch over the original DSL.
 
 ### Tokamak code
 
-    collection(@some_articles) do
-        write :id,      "http://example.com/json"
-        title   "Today's Articles"
-        updated Time.now
+products {
+  link "order", orders_url, "type" => "application/xml"
+  
+  @products.each do |prod|
+    product {
+      link   :self,  product_url(prod)
+      id prod.id
+      name prod.name
+      price prod.price
+    }
+  end
 
-        author {
-            name  "John Doe"
-            email "joedoe@example.com"
-        }
+}
 
-        author {
-            name  "My Professor"
-            email "myprofessor@example.com"
-        }
-
-        link("next"    , "http://a.link.com/next")
-        link("previous", "http://a.link.com/previous")
-
-        members(:root => "articles") do |member, article|
-            write :id,      "uri:#{article[:id]}"
-            title   article[:title]
-            updated article[:updated]
-
-            link("image", "http://example.com/image/1")
-            link("image", "http://example.com/image/2", :type => "application/json")
-        end
-    end
 
 Generates the following representations:
 
 ### JSON
 
-    {
-        "author": [{
-            "name": "John Doe",
-            "email": "joedoe@example.com"
-        },
-        {
-            "name": "My Professor",
-            "email": "myprofessor@example.com"
-        }],
-        "title": "Feed",
-        "id": "http://example.com/json",
-        "link": [{
-            "href": "http://a.link.com/next",
-            "rel": "next",
-            "type": "application/json"
-        },
-        {
-            "href": "http://a.link.com/previous",
-            "rel": "previous",
-            "type": "application/json"
-        }],
-        "articles": [{
-            "title": "a great article",
-            "id": "uri:1",
-            "link": [{
-                "href": "http://example.com/image/1",
-                "rel": "image",
-                "type": "application/json"
-            },
-            {
-                "type": "application/json",
-                "href": "http://example.com/image/2",
-                "rel": "image",
-                "type": "application/json"
-            }],
-            "updated": "2011-01-05T10:40:58-02:00"
-        },
-        {
-            "title": "another great article",
-            "id": "uri:2",
-            "link": [{
-                "href": "http://example.com/image/1",
-                "rel": "image",
-                "type": "application/json"
-            },
-            {
-                "type": "application/json",
-                "href": "http://example.com/image/2",
-                "rel": "image",
-                "type": "application/json"
-            }],
-            "updated": "2011-01-05T10:40:58-02:00"
-        }],
-        "updated": "2011-01-05T10:40:58-02:00"
-    }
+{"products":
+	{"link":[
+		{"type":"application/xml",
+		 "rel":"order",
+		 "href":"http://localhost:3000/orders"}],
+	"product":[
+		{"link":
+			[{"rel":"self",
+			  "href":"http://localhost:3000/products/2",
+			  "type":"application/json"}],
+			 "id":2,
+			 "name":"Rest Training (20h)",
+			 "price":"800.0"},
+		{"link":
+			[{"rel":"self",
+			  "href":"http://localhost:3000/products/3",
+			  "type":"application/json"}],
+		 	 "id":3,
+		 	 "name":"Modern Software architecture and Design (20h)",
+			 "price":"800.0"}
+		]
+	}
+}
 
 ### XML
 
-    <?xml version="1.0"?>
-    <root>
-      <id>http://example.com/json</id>
-      <title>Feed</title>
-      <updated>2011-01-05T10:40:58-02:00</updated>
-      <author>
-        <name>John Doe</name>
-        <email>joedoe@example.com</email>
-      </author>
-      <author>
-        <name>My Professor</name>
-        <email>myprofessor@example.com</email>
-      </author>
-      <link href="http://a.link.com/next" rel="next" type="application/xml"/>
-      <link href="http://a.link.com/previous" rel="previous" type="application/xml"/>
-      <articles>
-        <id>uri:1</id>
-        <title>a great article</title>
-        <updated>2011-01-05T10:40:58-02:00</updated>
-        <link href="http://example.com/image/1" rel="image" type="application/xml"/>
-        <link href="http://example.com/image/2" type="application/json" rel="image"/>
-      </articles>
-      <articles>
-        <id>uri:2</id>
-        <title>another great article</title>
-        <updated>2011-01-05T10:40:58-02:00</updated>
-        <link href="http://example.com/image/1" rel="image" type="application/xml"/>
-        <link href="http://example.com/image/2" type="application/json" rel="image"/>
-      </articles>
-    </root>
+<?xml version="1.0"?>
+<products>
+  <link type="application/xml" rel="order" href="http://localhost:3000/orders"/>
+  <product>
+    <link rel="self" href="http://localhost:3000/products/2" type="application/xml"/>
+    <id>2</id>
+    <name>Rest Training (20h)</name>
+    <price>800.0</price>
+  </product>
+  <product>
+    <link rel="self" href="http://localhost:3000/products/3" type="application/xml"/>
+    <id>3</id>
+    <name>Modern Software architecture and Design (20h)</name>
+    <price>800.0</price>
+  </product>
+</products>
+
+
 
 ## Other features
 
@@ -155,3 +98,36 @@ Please check the unit tests, you can see a lot of richer samples, including test
 
 *This library was extracted from [Restfulie](https://github.com/caelum/restfulie) and then heavy refactored. The same terms apply, see LICENSE.txt*
 
+## A more complex example
+
+order {
+  
+  link "self", order_url(@order)
+  link "payment", order_payments_url(@order), "type" => "application/xml"
+  link "calendar", order_calendar_url(@order), "type" => "text/calendar"
+
+  address @order.address
+  price @order.price
+  state @order.state
+  
+  payments {
+    @order.payments.each do |p|
+      payment do 
+        value  p.value
+        state  p.state
+      end
+    end
+  }
+
+  items {
+    @order.items.each do |i|
+      item do
+        id     i.product.id
+        name   i.product.name
+        price  i.product.price
+        quantity  i.quantity
+      end
+    end
+  }
+
+}

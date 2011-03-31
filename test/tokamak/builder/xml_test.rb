@@ -413,18 +413,14 @@ class Tokamak::Builder::XmlLambdaTest < Test::Unit::TestCase
 
   def test_accepts_xml_namespaces_on_values
     obj = [{ :foo => "bar" }, { :foo => "zue" }]
-    xml = Tokamak::Builder::Xml.build(obj) do |collection|
-      collection.values do |values|
-        values.body("xmlns:biology" => "http://a.biology.namespace.com") {
-          values["biology"].face {
-            values["biology"].eyes  "blue"
-            values["biology"].mouth "large", :teeth_count => 32
-          }
+    xml = xml_build_and_parse(obj) do
+      body("xmlns:biology" => "http://a.biology.namespace.com") {
+        ns("biology").face {
+          ns("biology").eyes  "blue"
+          ns("biology").mouth "large", :teeth_count => 32
         }
-      end
+      }
     end
-
-    xml = Nokogiri::XML::Document.parse(xml)
 
     assert_equal "biology", xml.at_xpath(".//biology:face", {"biology" => "http://a.biology.namespace.com"}).namespace.prefix
   end

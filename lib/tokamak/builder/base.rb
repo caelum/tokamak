@@ -3,24 +3,38 @@ module Tokamak
     class Base
 
       # field id is quite common
-      undef_method :id
+      undef_method :id if respond_to?(:id)
 
       class << self
         
         def build_dsl(obj, options = {}, &block)
           recipe = block_given? ? block : options.delete(:recipe)
-
           raise Tokamak::BuilderError.new("Recipe required to build representation.") unless recipe.respond_to?(:call)
 
           builder = self.new(nil, options)
+          copy_internal_variables(builder, obj)
+          builder.instance_variable_set :@view, obj
+          def builder.method_missing(name, *args, &block)
+            begin
+              @view.send name, *args, &block
+            rescue
+              super
+            end
+          end
           builder.instance_exec(obj, &recipe)
 
           builder.representation
         end
+        
+        def copy_internal_variables(builder, obj)
+          # TODO this is nasty. i am sorry.
+          obj.instance_variables.each do |name|
+            builder.instance_variable_set name, obj.instance_variable_get(name)
+          end
+        end
 
         def build(obj, options = {}, &block)
           recipe = block_given? ? block : options.delete(:recipe)
-
           raise Tokamak::BuilderError.new("Recipe required to build representation.") unless recipe.respond_to?(:call)
 
           builder = self.new(obj, options)
@@ -67,6 +81,12 @@ module Tokamak
       def method_missing(sym, *args, &block)
         values do |v|
           v.send sym, *args, &block
+        end
+      end
+      
+      def ns(*args, &block)
+        values do |v|
+          v.send(:[], *args, &block)
         end
       end
 
